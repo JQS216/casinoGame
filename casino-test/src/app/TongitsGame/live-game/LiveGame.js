@@ -94,7 +94,7 @@ export default function TongitGame() {
             isOpen={isSidebarOpen}
             onClose={() => setIsSidebarOpen(false)}
           />
-          <NetworkStatus />
+          {/* <NetworkStatus /> */}
         </div>
       </div>
       <img

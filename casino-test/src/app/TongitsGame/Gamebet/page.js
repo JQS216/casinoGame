@@ -43,7 +43,7 @@ function GameBet() {
               }}
             />
           </button>
-          <NetworkStatus />
+          {/* <NetworkStatus /> */}
         </div>
         <div className="w-full h-auto flex justify-center items-center">
           <div className="flex flex-col">

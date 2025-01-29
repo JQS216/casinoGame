@@ -1,3 +1,5 @@
+// ! DO NOT TOUCH ANYTHING THIS IS THE SERVER FOR THE BACKEND 
+// NOTE ASK FIRST THE DEVS BEFORE TO TOUCH THIS 
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -22,6 +24,7 @@ const io = new Server(httpServer, {
 const games = new Map();
 const PLAYERS_REQUIRED = 3;
 
+// note sanitize the Game State
 function sanitizeGameState(game) {
   return {
     id: game.id,
@@ -66,6 +69,7 @@ function sanitizeGameState(game) {
   };
 }
 
+// note connection to the socket
 io.on('connection', (socket) => {
   console.log(`New connection: ${socket.id}`);
 
@@ -173,6 +177,7 @@ io.on('connection', (socket) => {
   });
 });
 
+// note start game
 function startGame(game) {
   if (game.players.length !== PLAYERS_REQUIRED) return;
 
@@ -204,6 +209,7 @@ function startGame(game) {
   }
 }
 
+// note handle the player action
 function handlePlayerAction(game, action, playerIndex) {
   const player = game.players[playerIndex];
   const playerName = player.name;
@@ -269,6 +275,7 @@ function handlePlayerAction(game, action, playerIndex) {
   }
 }
 
+// note player draw a card
 function handleDraw(game, fromDeck, meldIndices = []) {
   if (game.hasDrawnThisTurn) return;
 
@@ -311,6 +318,7 @@ function handleDraw(game, fromDeck, meldIndices = []) {
   }
 }
 
+// note player discard a card
 function handleDiscard(game, cardIndex) {
   const currentPlayer = game.players[game.currentPlayerIndex];
   
@@ -331,6 +339,7 @@ function handleDiscard(game, cardIndex) {
   game.currentPlayerIndex = (game.currentPlayerIndex + 1) % game.players.length;
 }
 
+// note player call a draw
 function handleCallDraw(game) {
   const scores = game.players.map(player => ({
     id: player.id,
@@ -354,6 +363,7 @@ function handleCallDraw(game) {
   game.gameEnded = true;
 }
 
+// note player do meld 
 function handleMeld(game, cardIndices) {
   const currentPlayer = game.players[game.currentPlayerIndex];
   const meldedCards = cardIndices.map(index => currentPlayer.hand[index]);
@@ -371,6 +381,7 @@ function handleMeld(game, cardIndices) {
   }
 }
 
+// note player do a sapaw 
 function handleSapaw(game, targetPlayerIndex, targetMeldIndex, cardIndices) {
   const currentPlayer = game.players[game.currentPlayerIndex];
   const targetPlayer = game.players[targetPlayerIndex];
@@ -387,6 +398,7 @@ function handleSapaw(game, targetPlayerIndex, targetMeldIndex, cardIndices) {
   game.selectedCardIndices = [];
 }
 
+// note player tongits
 function handleTongits(game) {
   const currentPlayer = game.players[game.currentPlayerIndex];
   currentPlayer.score = 0;
@@ -404,6 +416,7 @@ function handleTongits(game) {
   game.lastAction = { player: currentPlayer.name, type: 'Achieved Tongits!' };
 }
 
+// note handle auto sort card
 function handleAutoSort(game, playerIndex) {
   const player = game.players[playerIndex];
   player.hand.sort((a, b) => {
@@ -414,6 +427,7 @@ function handleAutoSort(game, playerIndex) {
   });
 }
 
+//note player do shuffle
 function handleShuffle(game, playerIndex) {
   const player = game.players[playerIndex];
   for (let i = player.hand.length - 1; i > 0; i--) {
@@ -422,6 +436,8 @@ function handleShuffle(game, playerIndex) {
   }
 }
 
+
+// note next game if the game end
 function handleNextGame(game) {
   const preservedConsecutiveWins = game.players.map(player => player.consecutiveWins || 0);
   const winnerIndex = preservedConsecutiveWins.indexOf(Math.max(...preservedConsecutiveWins));
@@ -465,6 +481,8 @@ function handleNextGame(game) {
   }
 }
 
+
+// note reset Game if the game already end
 function handleResetGame(game) {  
   game.round = 1;
   game.deck = createDeck();
@@ -515,6 +533,8 @@ function handleResetGame(game) {
 
   console.log("Game Reset");
 }
+
+// note player do fight
 function handleFight(game, playerIndex) {
   if (game.fightInitiator !== null || !game.hasDrawnThisTurn) return;
 
@@ -529,6 +549,7 @@ function handleFight(game, playerIndex) {
   game.fightTimeout = setTimeout(() => handleFightTimeout(game), 30000);
 }
 
+// note player do fight responsive either draw or fight
 function handleFightResponse(game, playerIndex, accept) {
   if (game.fightInitiator === null || playerIndex === game.fightInitiator) return;
 
@@ -545,6 +566,7 @@ function handleFightResponse(game, playerIndex, accept) {
   }
 }
 
+// note resolve fight
 function resolveFight(game) {
   // Count how many players accepted
   const acceptedResponses = game.fightResponses.filter(response => response.accept);
@@ -673,6 +695,7 @@ function resolveFight(game) {
   });
 }
 
+// note player challenge the fight
 function handleChallenge(game, playerIndex, targetIndex) {
   if (game.challengeInitiator !== null || playerIndex === targetIndex) return;
 
@@ -686,6 +709,7 @@ function handleChallenge(game, playerIndex, targetIndex) {
   });
 }
 
+// note player challenge the fight
 function handleChallengeResponse(game, playerIndex, accept) {
   if (game.challengeInitiator === null || playerIndex !== game.challengeTarget) return;
 
@@ -698,6 +722,7 @@ function handleChallengeResponse(game, playerIndex, accept) {
   }
 }
 
+// note resolve the challenege
 function resolveChallenge(game) {
   const initiatorScore = calculateHandPoints(game.players[game.challengeInitiator].hand);
   const targetScore = calculateHandPoints(game.players[game.challengeTarget].hand);
@@ -722,6 +747,7 @@ function resolveChallenge(game) {
   });
 }
 
+// note player do a fight
 function handleFightTimeout(game) {
   if (game.fightInitiator === null) return;
 

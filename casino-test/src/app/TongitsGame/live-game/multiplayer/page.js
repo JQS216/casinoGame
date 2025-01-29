@@ -70,6 +70,7 @@ const Game = () => {
 
   useEffect(() => {
     const newSocket = io("http://localhost:5000");
+    // const newSocket = io("http://localhost:5000");
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
@@ -486,7 +487,7 @@ const Game = () => {
             isOpen={isSidebarOpen}
             onClose={() => setIsSidebarOpen(false)}
           />
-          <NetworkStatus />
+          {/* <NetworkStatus /> */}
         </div>
       </div>
 
@@ -716,7 +717,7 @@ const Game = () => {
         />
       )}
 
-      <ChatSideBar isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      <ChatSideBar  isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       {currentAction && <ActionText action={currentAction} />}
 
       <FightModal

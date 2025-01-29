@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Card } from "../TongitsGame/play-bot/Card";
 import Scoreboard from "./Scoreboard";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+
 
 function ScoreDashboard({
   socketId,
